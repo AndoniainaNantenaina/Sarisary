@@ -14,6 +14,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import com.example.paint1.data.ObjectToDraw;
+
 import java.sql.Array;
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ public class DrawingView extends View
     public static final int DRAWING_TYPE_ELLIPSE = 1;
     public static final int DRAWING_TYPE_RECT = 2;
 
+    //  Type de dessin courant
     int CURRENT_DRAWING_TYPE = DRAWING_TYPE_SIMPLE;
 
     //  Couleur de dessin (valeur par défaut BLUE)
@@ -32,15 +35,6 @@ public class DrawingView extends View
     public static int GREEN = 0;
     public static int BLUE = 255;
 
-    ArrayList<Integer> tabEllipseX = new ArrayList<Integer>();
-    ArrayList<Integer> tabEllipseY = new ArrayList<Integer>();
-    ArrayList<Integer> tabRectX = new ArrayList<Integer>();
-    ArrayList<Integer> tabRectY = new ArrayList<Integer>();
-
-    ArrayList<Rect> tabRect = new ArrayList<Rect>();
-    ArrayList<RectF> tabEllipse = new ArrayList<RectF>();
-    ArrayList<Paint> tabPaint = new ArrayList<Paint>();
-
     int touchX = -1;
     int touchY = -1;
 
@@ -48,6 +42,9 @@ public class DrawingView extends View
     int endX = -1;
     int beginY = -1;
     int endY = -1;
+
+    //  Liste des objets à dessiner
+    ArrayList<ObjectToDraw> objectToDrawArrayList = new ArrayList<ObjectToDraw>();
 
     //  Création du constructeur
     public DrawingView(Context context) {
@@ -65,52 +62,29 @@ public class DrawingView extends View
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (beginX != -1 && beginY != -1 && endX != -1 && endY != -1)
+        //  Itération sur les objets à déssiner
+        for (int o=0; o< objectToDrawArrayList.size(); o++)
         {
+            //  Prendre l'objet sur l'index
+            ObjectToDraw object = objectToDrawArrayList.get(o);
+
             Paint p = new Paint();
 
-            if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_SIMPLE)
+            if (object.drawingType == DRAWING_TYPE_SIMPLE)
             {
-                p.setARGB(ALPHA, RED, GREEN, BLUE);
-                canvas.drawLine(beginX, beginY, endX, endY, p);
+                p.setARGB(ALPHA, object.red, object.green, object.blue);
+                canvas.drawLine(object.beginX, object.beginY, object.endX, object.endY, p);
             }
-            else if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_ELLIPSE)
+            else if (object.drawingType == DRAWING_TYPE_ELLIPSE)
             {
-                p.setARGB(ALPHA, RED, GREEN, BLUE);
-                canvas.drawOval(beginX, beginY, endX, endY, p);
+                p.setARGB(ALPHA, object.red, object.green, object.blue);
+                canvas.drawOval(object.beginX, object.beginY, object.endX, object.endY, p);
             }
-            else if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_RECT)
+            else if (object.drawingType == DRAWING_TYPE_RECT)
             {
-                p.setARGB(ALPHA, RED, GREEN, BLUE);
-                canvas.drawRect(beginX, beginY, endX, endY, p);
+                p.setARGB(ALPHA, object.red, object.green, object.blue);
+                canvas.drawRect(object.beginX, object.beginY, object.endX, object.endY, p);
             }
-
-            /*//  Itération sur la liste des points X rectangle
-            for (int r=0; r<=tabRectX.size(); r++)
-            {
-                int beginX = tabRectX.get(r),
-                    beginY = tabRectY.get(r),
-                    endX = tabRectX.get(r + 1),
-                    endY = tabRectY.get(r + 1);
-
-                Paint p = new Paint();
-                canvas.drawRect(beginX, beginY, endX, endY, p);
-            }*/
-
-            /*for (int r=0; r<=tabEllipseX.size(); r++)
-            {
-                int beginX = tabEllipseX.get(r),
-                        beginY = tabEllipseX.get(r),
-                        endX = tabEllipseX.get(r + 1),
-                        endY = tabEllipseX.get(r + 1);
-
-                Paint p = new Paint();
-                canvas.drawOval(beginX, beginY, endX, endY, p);
-            }*/
-
-            //for (int e=0; e<tabEllipseX.size(); e++)
-            //{
-            //}
         }
     }
 
@@ -127,10 +101,25 @@ public class DrawingView extends View
             beginY = (int)event.getY();
         }
 
-        if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_MOVE)
+        if (event.getAction() == MotionEvent.ACTION_UP)
         {
             endX = (int)event.getX();
             endY = (int)event.getY();
+
+            ObjectToDraw obj = new ObjectToDraw();
+            obj.drawingType = CURRENT_DRAWING_TYPE;
+            obj.red = RED;
+            obj.green = GREEN;
+            obj.blue = BLUE;
+
+            obj.beginX = beginX;
+            obj.beginY = beginY;
+            obj.endX = endX;
+            obj.endY = endY;
+
+            //  Ajouter dans la liste
+            objectToDrawArrayList.add(obj);
+            System.out.println(objectToDrawArrayList.size());
         }
 
         /*//  Ajouter dans les tableaux de coords suivant le type de dessin
@@ -181,5 +170,11 @@ public class DrawingView extends View
         RED = r;
         GREEN = g;
         BLUE = b;
+    }
+
+    public void clear()
+    {
+        objectToDrawArrayList.clear();
+        invalidate();
     }
 }

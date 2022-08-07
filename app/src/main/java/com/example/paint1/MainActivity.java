@@ -49,5 +49,8 @@ public class MainActivity extends AppCompatActivity {
         blueColorBtn.setOnClickListener(
                 v -> drawingView.setColor(255, 0, 0, 255)
         );
+
+        ImageButton btnClear = (ImageButton) findViewById(R.id.btnClearDraw);
+        btnClear.setOnClickListener(v -> drawingView.clear());
     }
 }
