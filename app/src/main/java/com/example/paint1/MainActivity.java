@@ -25,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private void setUpToolbarEventListener()
     {
         //  Bouton de type de dessin
-        ImageButton btnDrawLine = (ImageButton) findViewById(R.id.btnDrawLine);
+        ImageButton btnDrawLine = (ImageButton) findViewById(R.id.btnDrawRect);
         ImageButton btnDrawEllipse = (ImageButton) findViewById(R.id.btnDrawEllipse);
-        ImageButton btnDrawSimple = (ImageButton) findViewById(R.id.btnDrawSimple);
+        ImageButton btnDrawSimple = (ImageButton) findViewById(R.id.btnDrawLine);
 
         btnDrawSimple.setOnClickListener(v -> drawingView.setCurrentDrawingType(
                 DrawingView.DRAWING_TYPE_SIMPLE));

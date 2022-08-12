@@ -30,10 +30,10 @@ public class DrawingView extends View
     int CURRENT_DRAWING_TYPE = DRAWING_TYPE_SIMPLE;
 
     //  Couleur de dessin (valeur par défaut BLUE)
-    public static int ALPHA = 255;
-    public static int RED = 0;
-    public static int GREEN = 0;
-    public static int BLUE = 255;
+    int ALPHA = 255;
+    int RED = 0;
+    int GREEN = 0;
+    int BLUE = 255;
 
     int touchX = -1;
     int touchY = -1;
@@ -62,28 +62,44 @@ public class DrawingView extends View
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        Paint p = new Paint();
+        p.setARGB(ALPHA, RED, GREEN, BLUE);
+
+        if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_SIMPLE)
+        {
+            canvas.drawLine(beginX, beginY, endX, endY, p);
+        }
+        else if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_RECT)
+        {
+            canvas.drawRect(beginX, beginY, endX, endY, p);
+        }
+        else if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_ELLIPSE)
+        {
+            canvas.drawOval(beginX, beginY, endX, endY, p);
+        }
+
         //  Itération sur les objets à déssiner
         for (int o=0; o< objectToDrawArrayList.size(); o++)
         {
             //  Prendre l'objet sur l'index
             ObjectToDraw object = objectToDrawArrayList.get(o);
 
-            Paint p = new Paint();
+            Paint paint = new Paint();
 
             if (object.drawingType == DRAWING_TYPE_SIMPLE)
             {
-                p.setARGB(ALPHA, object.red, object.green, object.blue);
-                canvas.drawLine(object.beginX, object.beginY, object.endX, object.endY, p);
+                paint.setARGB(ALPHA, object.red, object.green, object.blue);
+                canvas.drawLine(object.beginX, object.beginY, object.endX, object.endY, paint);
             }
             else if (object.drawingType == DRAWING_TYPE_ELLIPSE)
             {
-                p.setARGB(ALPHA, object.red, object.green, object.blue);
-                canvas.drawOval(object.beginX, object.beginY, object.endX, object.endY, p);
+                paint.setARGB(ALPHA, object.red, object.green, object.blue);
+                canvas.drawOval(object.beginX, object.beginY, object.endX, object.endY, paint);
             }
             else if (object.drawingType == DRAWING_TYPE_RECT)
             {
-                p.setARGB(ALPHA, object.red, object.green, object.blue);
-                canvas.drawRect(object.beginX, object.beginY, object.endX, object.endY, p);
+                paint.setARGB(ALPHA, object.red, object.green, object.blue);
+                canvas.drawRect(object.beginX, object.beginY, object.endX, object.endY, paint);
             }
         }
     }
@@ -101,58 +117,29 @@ public class DrawingView extends View
             beginY = (int)event.getY();
         }
 
-        if (event.getAction() == MotionEvent.ACTION_UP)
+        if (event.getAction() == MotionEvent.ACTION_MOVE)
         {
             endX = (int)event.getX();
             endY = (int)event.getY();
+        }
 
+        if (event.getAction() == MotionEvent.ACTION_UP)
+        {
             ObjectToDraw obj = new ObjectToDraw();
-            obj.drawingType = CURRENT_DRAWING_TYPE;
-            obj.red = RED;
-            obj.green = GREEN;
-            obj.blue = BLUE;
 
-            obj.beginX = beginX;
-            obj.beginY = beginY;
-            obj.endX = endX;
-            obj.endY = endY;
+            // Assigner les valeurs
+            obj.beginX = this.beginX;
+            obj.beginY = this.beginY;
+            obj.endX = this.endX;
+            obj.endY = this.endY;
+            obj.drawingType = this.CURRENT_DRAWING_TYPE;
+            obj.alpha = this.ALPHA;
+            obj.red = this.RED;
+            obj.green = this.GREEN;
+            obj.blue = this.BLUE;
 
-            //  Ajouter dans la liste
             objectToDrawArrayList.add(obj);
-            System.out.println(objectToDrawArrayList.size());
         }
-
-        /*//  Ajouter dans les tableaux de coords suivant le type de dessin
-        if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_SIMPLE)
-        {
-            //  Ajout des coords X
-            tabRectX.add(beginX);
-            tabRectX.add(endX);
-
-            //  Ajout des coords Y
-            tabRectY.add(beginY);
-            tabRectY.add(endY);
-        }
-        else if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_ELLIPSE)
-        {
-            //  Ajout des coords X
-            tabEllipseX.add(beginX);
-            tabEllipseX.add(endX);
-
-            //  Ajout des coords Y
-            tabEllipseY.add(beginY);
-            tabEllipseY.add(endY);
-        }
-        else if (CURRENT_DRAWING_TYPE == DRAWING_TYPE_RECT)
-        {
-            //  Ajout des coords X
-            tabRectX.add(beginX);
-            tabRectX.add(endX);
-
-            //  Ajout des coords Y
-            tabRectY.add(beginY);
-            tabRectY.add(endY);
-        }*/
 
         invalidate();
 
@@ -166,10 +153,10 @@ public class DrawingView extends View
 
     public void setColor(int a, int r, int g, int b)
     {
-        ALPHA = a;
-        RED = r;
-        GREEN = g;
-        BLUE = b;
+        this.ALPHA = a;
+        this.RED = r;
+        this.GREEN = g;
+        this.BLUE = b;
     }
 
     public void clear()
