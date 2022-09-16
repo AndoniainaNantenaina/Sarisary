@@ -161,7 +161,12 @@ public class DrawingView extends View
 
     public void clear()
     {
-        objectToDrawArrayList.clear();
-        invalidate();
+        if (objectToDrawArrayList.size() != 0)
+        {
+            objectToDrawArrayList.remove(
+                    objectToDrawArrayList.size() - 1
+            );
+            invalidate();
+        }
     }
 }
